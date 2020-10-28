@@ -4,8 +4,6 @@ const expressJwt = require('express-jwt');
 const nodemailer = require('nodemailer');
 const { validationResult } = require('express-validator');
 
-console.log(`${process.env.EMAIL_FROM}`);
-console.log(`${process.env.EMAIL_PASSWORD}`);
 
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -65,7 +63,33 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({
+            error: errors.array()[0]["msg"]
+        });
+    }
 
+    const { email, password } = req.body;
+    User.findOne({ email }).exec((err, user) => {
+        if(err || !user){
+            return res.status(400).json({
+                error: 'Email not registered yet!'
+            });
+        }
+        if(user.authenticate(password)){
+            const token = jwt.sign({ user: user._id }, process.env.JWT_AUTH_SECRET, { expiresIn: '7d' });
+            const { _id, name, email, role } = user;
+            return res.status(200).json({
+                token,
+                user: { _id, name, email, role }
+            })
+        }else{
+            return res.status(400).json({
+                error: 'Email and password do not match!'
+            });
+        }
+    });
 };
 
 exports.signout = (req, res) => {
@@ -106,5 +130,15 @@ exports.sendForgotLink = (req, res) => {
 };
 
 exports.userResetPassword = (req, res) => {
+
+};
+
+exports.isSignedIn = expressJwt({ secret: process.env.JWT_AUTH_SECRET, algorithms: ['HS256'], userProperty: 'auth' });
+
+exports.isAuthenticated = (req, res, next) => {
+
+};
+
+exports.isAdmin = (req, res, next) => {
 
 };
