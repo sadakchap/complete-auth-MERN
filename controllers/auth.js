@@ -96,32 +96,37 @@ exports.signout = (req, res) => {
 
 };
 
-// check is token exists
 exports.userEmailVerify = (req, res) => {
     const { token } = req.body;
-    try {
-        const { name, email, password } = jwt.verify(token, process.env.JWT_VERIFY_EMAIL_SECRET);
-        const newUser = new User({ name, email, password });
-        User.findOne({ email }).exec((err, user) => {
-            if(user){
-                return res.status(400).json({
-                    error: 'Sorry, email already taken!'
-                });
-            }
-            newUser.save((err, saved) => {
-                if(err){
+    if(token){
+        try {
+            const { name, email, password } = jwt.verify(token, process.env.JWT_VERIFY_EMAIL_SECRET);
+            const newUser = new User({ name, email, password });
+            User.findOne({ email }).exec((err, user) => {
+                if(user){
                     return res.status(400).json({
-                        error: 'Sorry, something went wrong'
+                        error: 'Sorry, email already taken!'
                     });
                 }
-                return res.status(200).json({
-                    message: 'Please, Log into your account'
-                });
+                newUser.save((err, saved) => {
+                    if(err){
+                        return res.status(400).json({
+                            error: 'Sorry, something went wrong'
+                        });
+                    }
+                    return res.status(200).json({
+                        message: 'Please, Log into your account'
+                    });
+                })
             })
-        })
-    } catch (err) {
+        } catch (err) {
+            return res.status(400).json({
+                error: 'Invalid token or Expired Token, please Signup again!'
+            })
+        }
+    }else{
         return res.status(400).json({
-            error: 'Invalid token or Expired Token, please Signup again!'
+            error: 'Missing reset password token'
         })
     }
 };
