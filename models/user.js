@@ -23,13 +23,17 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    salt: String,
+    resetPasswordLink: {
+        type: String,
+        default: ''
+    },
+    salt: String
 }, { timestamps: true });
 
 userSchema.virtual('password')
     .set(function(password){
         this._password = password;
-        this.salt = this.makeSalt;
+        this.salt = this.makeSalt();
         this.hashed_password = this.securePassword(password);
     })
     .get(function(){
