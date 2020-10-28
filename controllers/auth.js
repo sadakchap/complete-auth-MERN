@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 const nodemailer = require('nodemailer');
 const { validationResult } = require('express-validator');
-
+const _ = require('lodash');
 
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -96,6 +96,7 @@ exports.signout = (req, res) => {
 
 };
 
+// check is token exists
 exports.userEmailVerify = (req, res) => {
     const { token } = req.body;
     try {
@@ -125,12 +126,106 @@ exports.userEmailVerify = (req, res) => {
     }
 };
 
-exports.sendForgotLink = (req, res) => {
+exports.sendForgotPassowrdLink = (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({
+            error: errors.array()[0]["msg"]
+        });
+    }
+    const { email } = req.body;
+    User.findOne({ email }).exec((err, user) => {
+        if(err || !user){
+            return res.status(400).json({
+                error: 'Email not registered yet!'
+            });
+        }
+        const token = jwt.sign({ user: user._id }, process.env.JWT_RESET_PASSWORD_SECRET, { expiresIn: '20m' });
+
+        return user.updateOne({
+            resetPasswordLink: token
+        }, (err, updatedUser) => {
+            if(err){
+                return res.status(400).json({
+                    error: 'Something went wrong'
+                });
+            }
+            const resetLink = `${process.env.CLIENT_URL}/user/password/reset/${token}`;
+            transporter.sendMail({
+                from: process.env.EMAIL_FROM,
+                to: email,
+                subject: 'MERN-AUTH Password Reset Link',
+                html: `
+                    <p>Hi ${user.name}, </p>
+                    <p>Just click on the link below and reset your password</p>
+                    <a href="${resetLink}" target="_blank">Reset Password</a>
+                    <p>If you didn't generated this link, no action need to be taken.</p>
+                    <hr/>
+                    <p>This email contains sensitive information, please do not share it with anyone</p>
+                    <p>${process.env.CLIENT_URL}</p>
+                `,
+            }, (err, info) => {
+                if(err){
+                    console.log(err);
+                    return res.status(400).json({
+                        error: 'Couldnt send email'
+                    });
+                }
+                return res.status(201).json({
+                    message: 'Please, check your registered email for further instructions'
+                });
+            });
+        })
+    })
 
 };
 
 exports.userResetPassword = (req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({
+            error: errors.array()[0]["msg"]
+        });
+    }
+    const { token, newPassword } = req.body;
+    if(token){
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_RESET_PASSWORD_SECRET);
+            User.findById(decoded.user).exec((err, user) => {
+                if(err || !user){
+                    return res.status(400).json({
+                        error: 'Hmm, looks like user doesn\'t exists '
+                    });
+                }
 
+                const updatedFields = {
+                    resetPasswordLink: '',
+                    password: newPassword
+                }
+
+                user = _.extend(user, updatedFields);
+                user.save((err, saved) => {
+                    if(err){
+                        return res.status(400).json({
+                            error: 'Sorry, something went wrong'
+                        });
+                    }
+                    return res.status(201).json({
+                        message: 'Password updated successfully!'
+                    })
+                })
+
+            })
+        } catch (err) {
+            return res.status(400).json({
+                error: 'Invalid or Expired token!'
+            })
+        }
+    }else{
+        return res.status(400).json({
+            error: 'Missing reset password token'
+        })
+    }
 };
 
 exports.isSignedIn = expressJwt({ secret: process.env.JWT_AUTH_SECRET, algorithms: ['HS256'], userProperty: 'auth' });
