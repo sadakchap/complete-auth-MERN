@@ -1,17 +1,10 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
-const nodemailer = require('nodemailer');
 const { validationResult } = require('express-validator');
 const _ = require('lodash');
+const { sendMail } = require('../helpers/sendMail');
 
-let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: `${process.env.EMAIL_FROM}`,
-      pass: `${process.env.EMAIL_PASSWORD}`,
-    },
-});
 
 exports.signup = (req, res) => {
 
@@ -38,27 +31,26 @@ exports.signup = (req, res) => {
         const token = jwt.sign({ name, email, password }, process.env.JWT_VERIFY_EMAIL_SECRET, { expiresIn: '15m' })
         
         const verifyLink = `${process.env.CLIENT_URL}/user/verify/${token}`;
-        transporter.sendMail({
-            from: process.env.EMAIL_FROM,
-            to: email,
-            subject: 'MERN-AUTH Email Verification',
-            html: `
+        const html = `
                 <p>Hi ${name}, </p>
                 <p>Kindly follow the instructions to verify your email</p>
                 <p>Just click on the link below and verify your email address</p>
                 <a href="${verifyLink}" target="_blank">Verify Email</a>
-            `,
-        }, (err, info) => {
-            console.log(err);
-            if(err){
+            `;
+
+        sendMail(email, 'MERN-AUTH Email Verification', html)
+            .then(result => {
+                console.log(result);
+                return res.status(201).json({
+                    message: 'Please, verify your email address'
+                });
+            })
+            .catch(err => {
+                console.log(err);;
                 return res.status(400).json({
                     error: 'Couldnt send email'
                 });
-            }
-            return res.status(201).json({
-                message: 'Please, verify your email address'
-            });
-        });
+            })
     })
 };
 
@@ -126,7 +118,7 @@ exports.userEmailVerify = (req, res) => {
         }
     }else{
         return res.status(400).json({
-            error: 'Missing reset password token'
+            error: 'Missing email verify token'
         })
     }
 };
@@ -149,18 +141,15 @@ exports.sendForgotPassowrdLink = (req, res) => {
 
         return user.updateOne({
             resetPasswordLink: token
-        }, (err, updatedUser) => {
+        },  (err, oldUser) => {
             if(err){
                 return res.status(400).json({
                     error: 'Something went wrong'
                 });
             }
             const resetLink = `${process.env.CLIENT_URL}/user/password/reset/${token}`;
-            transporter.sendMail({
-                from: process.env.EMAIL_FROM,
-                to: email,
-                subject: 'MERN-AUTH Password Reset Link',
-                html: `
+            const subject = 'MERN-AUTH Password Reset Link';
+            const html = `
                     <p>Hi ${user.name}, </p>
                     <p>Just click on the link below and reset your password</p>
                     <a href="${resetLink}" target="_blank">Reset Password</a>
@@ -168,18 +157,20 @@ exports.sendForgotPassowrdLink = (req, res) => {
                     <hr/>
                     <p>This email contains sensitive information, please do not share it with anyone</p>
                     <p>${process.env.CLIENT_URL}</p>
-                `,
-            }, (err, info) => {
-                if(err){
+                `;
+            
+            sendMail(email, subject, html)
+                .then(result => {
+                    return res.status(200).json({
+                        message: 'Please, check your registered email for further instructions'
+                    })
+                })
+                .catch(err => {
                     console.log(err);
                     return res.status(400).json({
-                        error: 'Couldnt send email'
+                        error: 'Couldn\'t send email'
                     });
-                }
-                return res.status(201).json({
-                    message: 'Please, check your registered email for further instructions'
-                });
-            });
+                })
         })
     })
 
@@ -201,6 +192,12 @@ exports.userResetPassword = (req, res) => {
                     return res.status(400).json({
                         error: 'Hmm, looks like user doesn\'t exists '
                     });
+                }
+
+                if(user.resetPasswordLink !== token){
+                    return res.status(400).json({
+                        error: 'Sorry, Reset link has been already used!'
+                    })
                 }
 
                 const updatedFields = {
