@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Authenticate } from '../helpers/auth';
 
 const Signin = ({ showToast }) => {
 
@@ -21,12 +22,13 @@ const Signin = ({ showToast }) => {
         axios.post(`${process.env.REACT_APP_API_URL}/signin`, { email, password })
             .then(res => {
                 if(res.data.error)  return showToast(res.data.error, 'error');
-                setFormData({
-                    email: '',
-                    password: ''
-                });
-                console.log(res.data);
-                return showToast('you are log in', 'success');
+                Authenticate(res, () => {
+                    setFormData({
+                        email: '',
+                        password: ''
+                    });
+                    return showToast('Sign in successfull!', 'success');
+                })
             })
             .catch(err => {
                 if(err.response.data.error) return showToast(err.response.data.error, 'error');
