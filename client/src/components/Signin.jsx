@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Authenticate } from '../helpers/auth';
+import { Link } from 'react-router-dom';
 
 const Signin = ({ showToast }) => {
 
@@ -8,6 +9,7 @@ const Signin = ({ showToast }) => {
         email: '',
         password: ''
     });
+
     const [loading, setLoading] = useState(false);
 
     const handleChange = name => e => setFormData({ ...formData, [name]: e.target.value });
@@ -50,6 +52,7 @@ const Signin = ({ showToast }) => {
                     <i className="fa fa-lock"></i>
                     <input type="password" placeholder="Password" onChange={handleChange("password")} value={password} />
                 </div>
+                <Link className="forget-link" to="/user/password/forgot">Forgot Password ?</Link>
                 <button type="submit" className="btn solid" disabled={loading}>Log in</button>
                 <p className="social-text">Or Sign In with social platforms</p>
                     <div className="social-media">

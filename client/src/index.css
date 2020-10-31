@@ -362,7 +362,7 @@ form.sign-up-form{
 /* Verify email screen */
 .container-fluid{
   position: relative;
-  width: 90%;
+  width: 80%;
   margin: 5em auto;
   box-shadow: 0 0 10px rgba(0, 0, 0, .2);
   padding: 2rem 5rem;
@@ -382,4 +382,42 @@ form.sign-up-form{
   margin: 0 auto;
   font-size: .9rem;
   font-weight: 300;
+}
+.forget-link{
+  text-align: right !important;
+  color: var(--primary);
+  font-size: .8rem;
+  align-self: flex-end;
+  margin-right: 100px;  
+}
+.min-h-screen{
+  min-height: calc(100vh);
+}
+.grid{
+  padding: 0;
+  display: grid;
+}
+.col-lg-2{
+  grid-template-columns: 1fr 1fr;
+}
+.form-container, .img-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.form-container h3{
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin-bottom: .5em;
+  text-align: left;
+}
+.form-container p{
+  font-size: .9rem;
+  margin-bottom: .5em;
+}
+.image-fluid{
+  width: 100%;
+  height: 100%;
 }
