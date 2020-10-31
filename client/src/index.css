@@ -1,6 +1,6 @@
 :root{
-    --primary: #362cf5;
-    --secondary: #271fc2;
+    --primary: #444ff4;
+    --secondary: #1409dd;
 }
 body {
   margin: 0;
@@ -217,7 +217,7 @@ form.sign-up-form{
 }
 
 .container.sign-up-mode::before{
-    transform: translate(100%, -50%);
+    transform: translate(98%, -50%);
     right: 52%;
 }
 

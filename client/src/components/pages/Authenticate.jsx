@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { ToastContainer, toast } from 'react-toastify';
 import FormsContainer from '../FormsContainer'
 import PanelsContainer from '../PanelsContainer'
 
@@ -17,9 +18,18 @@ const Authenticate = () => {
         }
     }
 
+    const showToast = (msg, status) => {
+        const toastPosition = mode ? { position: "top-center" } : { position: "top-right" };
+        if(status === 'error'){
+            return toast.error(`${msg}`, toastPosition);
+        }
+        return toast.success(`${msg}`, toastPosition);
+    }
+
     return (
         <div className={`container ${mode}`}>
-            <FormsContainer />
+            <ToastContainer />
+            <FormsContainer showToast={showToast} />
             <PanelsContainer changeMode={changeMode} />
         </div>
     )

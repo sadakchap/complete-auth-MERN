@@ -1,5 +1,5 @@
 import React from 'react';
-import SignupImg from '../assets/img/signup.svg';
+import loginImg from '../assets/img/login.svg';
 
 const RightPanel = ({ changeMode }) => {
     return (
@@ -9,7 +9,7 @@ const RightPanel = ({ changeMode }) => {
                 <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, ducimus expedita in aperiam autem ?</p>
                 <button className="btn transparent" id="sign-in-form" onClick={changeMode}>Log in</button>
             </div>
-            <img src={SignupImg} alt="login svg image" className="image"/>
+            <img src={loginImg} alt="signup svg" className="image" />
         </div>
     )
 }

@@ -1,14 +1,17 @@
 require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 const { connectToDB } = require('./db');
 const app = express();
 
 
 // MIDDLEWARES
-// TODO: use CORS
 app.use(express.json());
 if(process.env.NODE_ENV === 'development'){
+    app.use(cors({
+        origin: process.env.CLIENT_URL
+    }));
     app.use(morgan("dev"));
 }
 
