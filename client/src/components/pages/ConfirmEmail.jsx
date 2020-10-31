@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 
-const Activate = ({ match }) => {
+const ConfirmEmail = ({ match }) => {
 
     const [token, setToken] = useState('');
     const [loading, setLoading] = useState('');
@@ -49,4 +49,4 @@ const Activate = ({ match }) => {
     )
 }
 
-export default Activate
+export default ConfirmEmail

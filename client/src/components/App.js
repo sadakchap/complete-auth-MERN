@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Activate from './pages/Activate';
+import ConfirmEmail from './pages/ConfirmEmail';
 const { default: Authenticate } = require("./pages/Authenticate");
 
 function App() {
@@ -7,7 +7,7 @@ function App() {
     <Router>
       <Switch>
         <Route path="/" component={Authenticate} exact />
-        <Route path="/user/verify/:token" component={Activate} exact />
+        <Route path="/user/verify/:token" component={ConfirmEmail} exact />
       </Switch>
     </Router>
   );
