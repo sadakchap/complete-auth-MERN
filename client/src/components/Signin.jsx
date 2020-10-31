@@ -51,13 +51,10 @@ const Signin = ({ showToast }) => {
                     <input type="password" placeholder="Password" onChange={handleChange("password")} value={password} />
                 </div>
                 <button type="submit" className="btn solid" disabled={loading}>Log in</button>
-                <p className="social-text">Or sign up with social platforms</p>
+                <p className="social-text">Or Sign In with social platforms</p>
                     <div className="social-media">
                         <a href="#!" className="social-icons">
                             <i className="fa fa-facebook"></i>
-                        </a>
-                        <a href="#!" className="social-icons">
-                            <i className="fa fa-twitter"></i>
                         </a>
                         <a href="#!" className="social-icons">
                             <i className="fa fa-github"></i>

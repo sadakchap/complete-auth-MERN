@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Signup = ({ showToast }) => {
+const Signup = ({ showToast, changeMode }) => {
 
     const [formData, setFormData] = useState({
         name: '',
@@ -68,21 +68,8 @@ const Signup = ({ showToast }) => {
                     <input type="password" placeholder="Confirm Password" onChange={handleChange("passwordConfirm")} value={passwordConfirm}  />
                 </div>
                 <button type="submit" className="btn solid" disabled={loading}>Join us</button>
-                <p className="social-text">Or sign up with social platforms</p>
-                    <div className="social-media">
-                        <a href="#!" className="social-icons">
-                            <i className="fa fa-facebook"></i>
-                        </a>
-                        <a href="#!" className="social-icons">
-                            <i className="fa fa-twitter"></i>
-                        </a>
-                        <a href="#!" className="social-icons">
-                            <i className="fa fa-github"></i>
-                        </a>
-                        <a href="#!" className="social-icons">
-                            <i className="fa fa-google"></i>
-                        </a>
-                    </div>
+                <p className="social-text">Or Sign in with email or Social platforms</p>
+                <button className="btn secondary" onClick={changeMode} >Sign In</button>
             </form>
         </>
     )

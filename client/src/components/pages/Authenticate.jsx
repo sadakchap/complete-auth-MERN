@@ -34,7 +34,7 @@ const Authenticate = () => {
             {isAuth() && isAuth().role === 1 ? <Redirect to='/admin/dashboard' /> : null }
             <div className={`container ${mode}`}>
                 <ToastContainer />
-                <FormsContainer showToast={showToast} />
+                <FormsContainer showToast={showToast} changeMode={changeMode} />
                 <PanelsContainer changeMode={changeMode} />
             </div>
         </>
