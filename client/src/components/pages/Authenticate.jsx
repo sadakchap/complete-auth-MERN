@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { Redirect } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import FormsContainer from '../FormsContainer'
-import PanelsContainer from '../PanelsContainer'
+import { isAuth } from '../../helpers/auth';
+import FormsContainer from '../FormsContainer';
+import PanelsContainer from '../PanelsContainer';
 
 const Authenticate = () => {
 
@@ -27,11 +29,15 @@ const Authenticate = () => {
     }
 
     return (
-        <div className={`container ${mode}`}>
-            <ToastContainer />
-            <FormsContainer showToast={showToast} />
-            <PanelsContainer changeMode={changeMode} />
-        </div>
+        <>
+            {isAuth() ? <Redirect to='/user/dashboard' /> : null }
+            {isAuth() && isAuth().role === 1 ? <Redirect to='/admin/dashboard' /> : null }
+            <div className={`container ${mode}`}>
+                <ToastContainer />
+                <FormsContainer showToast={showToast} />
+                <PanelsContainer changeMode={changeMode} />
+            </div>
+        </>
     )
 }
 

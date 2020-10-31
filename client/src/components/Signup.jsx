@@ -67,7 +67,7 @@ const Signup = ({ showToast }) => {
                     <i className="fa fa-lock"></i>
                     <input type="password" placeholder="Confirm Password" onChange={handleChange("passwordConfirm")} value={passwordConfirm}  />
                 </div>
-                <button type="submit" className="btn solid">Join us</button>
+                <button type="submit" className="btn solid" disabled={loading}>Join us</button>
                 <p className="social-text">Or sign up with social platforms</p>
                     <div className="social-media">
                         <a href="#!" className="social-icons">
