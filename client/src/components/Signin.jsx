@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Authenticate, isAuth } from '../helpers/auth';
 import { Link, Redirect, useHistory } from 'react-router-dom';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 
 const Signin = ({ showToast }) => {
 
@@ -15,8 +16,10 @@ const Signin = ({ showToast }) => {
 
     const handleChange = name => e => setFormData({ ...formData, [name]: e.target.value });
 
-    const informParent = () => {
-        isAuth() && isAuth().role === 1 ? history.push('/admin/dashboard') : history.push('/user/dashboard');
+    const informParent = (response) => {
+        Authenticate(response, () => {
+            isAuth() && isAuth().role === 1 ? history.push('/admin/dashboard') : history.push('/user/dashboard');
+        });
     }
 
     const handleSubmit = e => {
@@ -36,7 +39,7 @@ const Signin = ({ showToast }) => {
                     });
                     showToast('Sign in successfull!', 'success');
                     setTimeout(() => {
-                        informParent();
+                        isAuth() && isAuth().role === 1 ? history.push('/admin/dashboard') : history.push('/user/dashboard');
                     }, 3000);
                 })
             })
@@ -45,6 +48,26 @@ const Signin = ({ showToast }) => {
                 return showToast('Sorry, something went wrong!', 'error');
             });
         setLoading(false);
+    }
+
+    const sendFacebookResponse = (userID, accessToken) => {
+        axios.post(`${process.env.REACT_APP_API_URL}/facebooklogin`, { userID, accessToken })
+            .then(res => {
+                console.log(res.data);
+                showToast('You are logged In with facebook profile', 'success');
+                setTimeout(() => {
+                    informParent(res);
+                }, 3000);
+            })
+            .catch(err => {
+                if(err.response.data.error) return showToast(err.response.data.error, 'error');
+                return showToast('Sorry, Something went Wrong!', 'error');
+            })
+    }
+
+    const responseFacebook = response => {
+        console.log(response);
+        sendFacebookResponse(response.userID, response.accessToken);
     }
 
     const { email, password } = formData;
@@ -64,14 +87,22 @@ const Signin = ({ showToast }) => {
                 <button type="submit" className="btn solid" disabled={loading}>Log in</button>
                 <p className="social-text">Or Sign In with social platforms</p>
                     <div className="social-media">
+                        <FacebookLogin
+                            appId={`${process.env.REACT_APP_FACEBOOK_CLIENT_ID}`}
+                            autoLoad={false}
+                            fields="name,email,picture"
+                            callback={responseFacebook}
+                            render={ renderProps => (
+                                <a href="#!"  onClick={renderProps.onClick} disabled={renderProps.disabled} className="social-icons">
+                                    <i className="fa fa-facebook"></i>
+                                </a>
+                            )}
+                        ></FacebookLogin>
                         <a href="#!" className="social-icons">
-                            <i className="fa fa-facebook"></i>
+                            <i className="fa fa-google"></i>
                         </a>
                         <a href="#!" className="social-icons">
                             <i className="fa fa-github"></i>
-                        </a>
-                        <a href="#!" className="social-icons">
-                            <i className="fa fa-google"></i>
                         </a>
                     </div>
             </form>

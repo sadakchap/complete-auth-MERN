@@ -13,7 +13,7 @@ const UserDashboard = () => {
             toast.success('You are logged out!');
             setTimeout(() => {
                 history.push('/');
-            }, 5000);
+            }, 2000);
         })
     }
 

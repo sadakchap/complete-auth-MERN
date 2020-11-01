@@ -13,7 +13,7 @@ const AdminDashboard = () => {
             toast.success('You are Logged out now!');
             setTimeout(() => {
                 history.push('/')
-            }, 3000);
+            }, 2000);
         })
     }
 

@@ -4,7 +4,7 @@ const expressJwt = require('express-jwt');
 const { validationResult } = require('express-validator');
 const _ = require('lodash');
 const { sendMail } = require('../helpers/sendMail');
-
+const axios = require('axios');
 
 exports.signup = (req, res) => {
 
@@ -238,4 +238,45 @@ exports.isAuthenticated = (req, res, next) => {
 
 exports.isAdmin = (req, res, next) => {
 
+};
+
+exports.facebookLoginController = (req, res) => {
+    const { userID, accessToken } = req.body;
+    const url = `https://graph.facebook.com/${userID}?fields=id,name,email&access_token=${accessToken}`;
+    return axios.get(url)
+        .then(response =>{
+            const { email, name } = response.data;
+            User.findOne({ email }).exec((err, user) => {
+                if(user){
+                    const token = jwt.sign({ user: user._id}, process.env.JWT_AUTH_SECRET, { expiresIn: '7d' });
+                    const { _id, name, email, role } = user;
+                    return res.status(200).json({
+                        token,
+                        user: { _id, name, email, role}
+                    })
+                }else{
+                    const password = email + process.env.JWT_AUTH_SECRET;
+                    const newUser = new User({ name, email, password });
+                    newUser.save((err, saved) => {
+                        if(err){
+                            return res.status(400).json({
+                                error: 'Facebook login failed!'
+                            });
+                        }
+                        const token = jwt.sign({ user: saved._id}, process.env.JWT_AUTH_SECRET, { expiresIn: '7d' });
+                        const { _id, name, email, role } = saved;
+                        return res.status(200).json({
+                            token,
+                            user: { _id, name, email, role}
+                        });
+                    });
+                }
+            })
+        })
+        .catch(err => {
+            console.log(err);
+            return res.status(400).json({
+                error: 'Facebook Login Failed!'
+            })
+        })
 };
