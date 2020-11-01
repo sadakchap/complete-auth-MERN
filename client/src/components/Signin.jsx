@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Authenticate } from '../helpers/auth';
-import { Link } from 'react-router-dom';
+import { Authenticate, isAuth } from '../helpers/auth';
+import { Link, Redirect, useHistory } from 'react-router-dom';
 
 const Signin = ({ showToast }) => {
 
@@ -11,8 +11,13 @@ const Signin = ({ showToast }) => {
     });
 
     const [loading, setLoading] = useState(false);
+    const history = useHistory();
 
     const handleChange = name => e => setFormData({ ...formData, [name]: e.target.value });
+
+    const informParent = () => {
+        isAuth() && isAuth().role === 1 ? history.push('/admin/dashboard') : history.push('/user/dashboard');
+    }
 
     const handleSubmit = e => {
         console.log('comming here');
@@ -29,7 +34,10 @@ const Signin = ({ showToast }) => {
                         email: '',
                         password: ''
                     });
-                    return showToast('Sign in successfull!', 'success');
+                    showToast('Sign in successfull!', 'success');
+                    setTimeout(() => {
+                        informParent();
+                    }, 3000);
                 })
             })
             .catch(err => {
