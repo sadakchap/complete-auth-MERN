@@ -131,9 +131,6 @@ const Signin = ({ showToast }) => {
                                 </a>
                             )}
                         />
-                        <a href="#!" className="social-icons">
-                            <i className="fa fa-github"></i>
-                        </a>
                     </div>
             </form>
         </>
