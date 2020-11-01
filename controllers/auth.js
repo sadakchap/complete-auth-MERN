@@ -5,6 +5,9 @@ const { validationResult } = require('express-validator');
 const _ = require('lodash');
 const { sendMail } = require('../helpers/sendMail');
 const axios = require('axios');
+const {OAuth2Client} = require('google-auth-library');
+const { response } = require('express');
+const user = require('../models/user');
 
 exports.signup = (req, res) => {
 
@@ -280,3 +283,50 @@ exports.facebookLoginController = (req, res) => {
             })
         })
 };
+
+const client = new OAuth2Client(process.env.GOOGLE_AUTH_CLIENT_ID);
+
+exports.googleLoginController = (req, res) => {
+    const { idToken } = req.body;
+    client.verifyIdToken({ idToken, audience: process.env.GOOGLE_AUTH_CLIENT_ID })
+        .then(response => {
+            const { email, name, email_verified } = response.payload;
+            if(email_verified){
+                User.findOne({ email }).exec((err, user) => {
+                    if(user){
+                        const token = jwt.sign({ user: user._id }, process.env.JWT_AUTH_SECRET, { expiresIn: '7d' });
+                        const { _id, email, name, role } = user;
+                        return res.status(200).json({
+                            token,
+                            user: { _id, name, email, role }
+                        });
+                    }else{
+                        const password = email + process.env.JWT_AUTH_SECRET;
+                        const newUser = new User({ name, email, password });
+                        newUser.save((err, data) => {
+                            if(err){
+                                console.log(err);
+                                return res.status(400).json({
+                                    error: 'Google login failed!'
+                                });
+                            }
+                            const token = jwt.sign({ user: data._id }, process.env.JWT_AUTH_SECRET, { expiresIn: '7d' });
+                            const { _id, email, name, role } = data;
+                            return res.status(200).json({
+                                token,
+                                user: { _id, name, email, role }
+                            });
+                        });
+                    }
+                })
+            }
+
+        })
+        .catch(err => {
+            console.log(err);
+            return res.status(400).json({
+                error: 'Google Login Failed!'
+            })
+        })
+
+}

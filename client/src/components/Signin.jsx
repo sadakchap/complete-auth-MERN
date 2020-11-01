@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Authenticate, isAuth } from '../helpers/auth';
-import { Link, Redirect, useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import { GoogleLogin } from 'react-google-login';
 
 const Signin = ({ showToast }) => {
 
@@ -70,6 +71,27 @@ const Signin = ({ showToast }) => {
         sendFacebookResponse(response.userID, response.accessToken);
     }
 
+    const sendGoogleToken = tokenId => {
+        axios.post(`${process.env.REACT_APP_API_URL}/googlelogin`, { idToken: tokenId })
+            .then(res => {
+                console.log(res.data);
+                showToast('You are logged In with Google profile', 'success');
+                setTimeout(() => {
+                    informParent(res);
+                }, 2000);
+            })
+            .catch(err => {
+                console.log(err);
+                if(err.response.data.error) return showToast(err.response.data.error, 'error');
+                return showToast('Sorry, something went wrong!', 'error');
+            })
+    }
+
+    const responseGoogle = response => {
+        console.log(response);
+        sendGoogleToken(response.tokenId)
+    }
+
     const { email, password } = formData;
     return (
         <>
@@ -98,9 +120,17 @@ const Signin = ({ showToast }) => {
                                 </a>
                             )}
                         ></FacebookLogin>
-                        <a href="#!" className="social-icons">
-                            <i className="fa fa-google"></i>
-                        </a>
+                        <GoogleLogin 
+                            clientId={`${process.env.REACT_APP_GOOGLE_CLIENT_ID}`}
+                            onSuccess={responseGoogle}
+                            onFailure={responseGoogle}
+                            cookiePolicy={'single_host_origin'}
+                            render={renderProps => (
+                                <a href="#!"  onClick={renderProps.onClick} disabled={renderProps.disabled} className="social-icons">
+                                    <i className="fa fa-google"></i>
+                                </a>
+                            )}
+                        />
                         <a href="#!" className="social-icons">
                             <i className="fa fa-github"></i>
                         </a>

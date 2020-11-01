@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { signup, signin, signout, userEmailVerify, sendForgotPassowrdLink, userResetPassword, facebookLoginController } = require('../controllers/auth');
+const { signup, signin, signout, userEmailVerify, sendForgotPassowrdLink, userResetPassword, facebookLoginController, googleLoginController } = require('../controllers/auth');
 const { validSignup, validSignin, validForgotPassword, validResetPassword } = require('../helpers/valid');
 
 router.post('/signup', validSignup, signup);
@@ -13,5 +13,6 @@ router.put('/user/password/forgot', validForgotPassword, sendForgotPassowrdLink)
 router.put('/user/password/reset', validResetPassword, userResetPassword);
 
 router.post('/facebooklogin', facebookLoginController);
+router.post('/googlelogin', googleLoginController);
 
 module.exports = router;
