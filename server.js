@@ -8,10 +8,10 @@ const app = express();
 
 // MIDDLEWARES
 app.use(express.json());
+app.use(cors({
+    origin: process.env.CLIENT_URL
+}));
 if(process.env.NODE_ENV === 'development'){
-    app.use(cors({
-        origin: process.env.CLIENT_URL
-    }));
     app.use(morgan("dev"));
 }
 
