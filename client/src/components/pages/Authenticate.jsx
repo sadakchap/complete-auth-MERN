@@ -11,8 +11,6 @@ const Authenticate = () => {
 
     const changeMode = (e) => {
         e.preventDefault();
-        console.log('changing mode');
-        console.log(e.target.id);
         if(e.target.id === 'sign-up-form'){
             return setMode('sign-up-mode')
         }else{

@@ -45,7 +45,7 @@ const Signin = ({ showToast }) => {
                 })
             })
             .catch(err => {
-                if(err.response.data.error) return showToast(err.response.data.error, 'error');
+                if(err?.response?.data.error) return showToast(err.response.data.error, 'error');
                 return showToast('Sorry, something went wrong!', 'error');
             });
         setLoading(false);

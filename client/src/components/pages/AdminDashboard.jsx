@@ -20,7 +20,7 @@ const AdminDashboard = () => {
     return (
         <>
             <ToastContainer />
-            <div className="container-fluid min-h-screen grid col-lg-2">
+            <div className="container-fluid min-h-screen grid col-lg-2 col-md-1">
                 <div className="content">
                     <h2>Welcome Admin, {user.name}!</h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae pariatur iste, dolorem vero unde laudantium eos odit neque aliquid! Quis, eos. Ex modi aperiam dolorum dolores excepturi provident pariatur error!</p>

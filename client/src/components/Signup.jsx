@@ -42,7 +42,7 @@ const Signup = ({ showToast, changeMode }) => {
                 return showToast(res.data.message, 'success');
             })
             .catch(err => {
-                if(err.response.data.error) return showToast(err.response.data.error, 'error');
+                if(err?.response?.data.error) return showToast(err.response.data.error, 'error');
                 return showToast('Sorry, Something went wrong!');
             })
     }

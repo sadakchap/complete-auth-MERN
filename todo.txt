@@ -1,5 +1,10 @@
-1) Implement social sign in -> facebook, google, github
+DONE -- 1) Implement social sign in -> facebook, google
 2) Bug fixes -> 
-    2.1) disabled submit button while processing
-    2.2) make responsive design
-    2.3) err.response.data.error, use coeleasing
+    2.1) ALREADY WORKING -- disabled submit button while processing
+    2.2) DONE -- make responsive design
+    2.3) DONE -- err.response.data.error, use coeleasing
+3) Final touches ->
+    3.1) Implement loading button spinner
+    3.2) Check all screens responsive
+    3.3) set cookies from server side
+    3.4) Have a proper folder structure

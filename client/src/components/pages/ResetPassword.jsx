@@ -48,7 +48,7 @@ const ResetPassword = ({ match }) => {
                 }, 5000);
             })
             .catch(err => {
-                if(err.response.data.error) return toast.error(err.response.data.error);
+                if(err?.response?.data.error) return toast.error(err.response.data.error);
                 return toast.error('Sorry, something went wrong!');
             })
     }
@@ -56,7 +56,7 @@ const ResetPassword = ({ match }) => {
     return (
         <>
             <ToastContainer />
-            <div className="container-fluid min-h-screen grid col-lg-2">
+            <div className="container-fluid min-h-screen grid col-lg-2 col-md-1">
                 <div className="form-container">
                     <form className="forgot-form" onSubmit={handleSubmit}>
                         <h3>Password Reset</h3>

@@ -28,7 +28,7 @@ const ConfirmEmail = ({ match }) => {
                 //TODO: redirect to login page
             })
             .catch(err => {
-                if(err.response.data.error) return toast.error(err.response.data.error);
+                if(err?.response?.data.error) return toast.error(err.response.data.error);
                 return toast.error('Sorry, something went wrong!');
             })
         setLoading(false);
